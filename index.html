@@ -3,841 +3,504 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Қазақстан теміржол жүйесі</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <title>Швеция: Инфрақұрылым, технология және экология — Тест</title>
   <style>
     :root {
       --bg: #0f172a;
       --card: #1e293b;
-      --card-light: #334155;
-      --accent: #38bdf8;
-      --accent-dark: #0284c7;
-      --success: #22c55e;
-      --danger: #ef4444;
-      --warning: #f59e0b;
+      --card-2: #0b1220;
       --text: #f8fafc;
       --muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-2: #22c55e;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --border: #334155;
     }
-
-    * {
-      box-sizing: border-box;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
-
+    * { box-sizing: border-box; }
     body {
-      background: radial-gradient(circle at top, #1e293b 0%, #0f172a 70%);
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: var(--bg);
       color: var(--text);
-      min-height: 100vh;
-      user-select: none;
+      line-height: 1.5;
     }
-
-    /* Railway Track & Animated Train */
-    .railway-board {
-      background: linear-gradient(180deg, #0b1120 0%, #172554 100%);
-      border: 1px solid rgba(56, 189, 248, 0.25);
-      border-radius: 16px;
-      padding: 18px 20px 14px;
-      margin-bottom: 20px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .track-wrapper {
-      position: relative;
-      height: 58px;
-      display: flex;
-      align-items: center;
-    }
-
-    .rail-line {
-      position: absolute;
-      left: 4%;
-      right: 4%;
-      bottom: 16px;
-      height: 5px;
-      background: repeating-linear-gradient(
-        90deg,
-        #64748b 0px,
-        #64748b 14px,
-        transparent 14px,
-        transparent 22px
-      );
-      border-top: 2px solid #cbd5e1;
-    }
-
-    .rail-progress {
-      position: absolute;
-      left: 4%;
-      bottom: 19px;
-      height: 3px;
-      width: 0%;
-      background: var(--success);
-      box-shadow: 0 0 10px var(--success);
-      transition: width 0.7s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-
-    .stations {
-      position: relative;
-      width: 92%;
+    .container {
+      max-width: 860px;
       margin: 0 auto;
+      padding: 24px 16px 64px;
+    }
+    .topbar {
       display: flex;
       justify-content: space-between;
-      z-index: 2;
-      margin-top: 20px;
-    }
-
-    .station {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .station-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: #334155;
-      border: 2px solid #94a3b8;
-      transition: all 0.3s;
-    }
-
-    .station.passed .station-dot {
-      background: var(--success);
-      border-color: #fff;
-      box-shadow: 0 0 8px var(--success);
-    }
-
-    .station-label {
-      font-size: 0.7rem;
-      color: var(--muted);
-      white-space: nowrap;
-    }
-
-    .train {
-      position: absolute;
-      bottom: 20px;
-      left: 4%;
-      transform: translateX(-50%);
-      transition: left 0.7s cubic-bezier(0.22, 1, 0.36, 1);
-      z-index: 4;
-      display: flex;
-      align-items: flex-end;
-      gap: 3px;
-    }
-
-    .locomotive {
-      background: linear-gradient(135deg, #ef4444, #b91c1c);
-      border: 1.5px solid #fecaca;
-      border-radius: 6px 12px 3px 3px;
-      padding: 3px 9px;
-      font-size: 0.72rem;
-      font-weight: 800;
-      color: #fff;
-      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.45);
-      position: relative;
-    }
-
-    .locomotive::after {
-      content: "";
-      position: absolute;
-      right: -6px;
-      top: 5px;
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #fef08a;
-      box-shadow: 0 0 10px #fef08a;
-    }
-
-    .smoke {
-      position: absolute;
-      top: -12px;
-      left: 6px;
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.65);
-      animation: puff 1.2s infinite ease-out;
-    }
-
-    @keyframes puff {
-      0% { transform: translate(0, 0) scale(0.7); opacity: 0.85; }
-      100% { transform: translate(-14px, -14px) scale(1.8); opacity: 0; }
-    }
-
-    .option-btn {
-      text-align: left;
-      background: rgba(15, 23, 42, 0.75);
-      border: 1px solid #334155;
-      color: var(--text);
-      padding: 14px 16px;
-      border-radius: 12px;
-      font-size: 0.95rem;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
       align-items: center;
       gap: 12px;
-      width: 100%;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
     }
-
-    .option-btn:hover:not(:disabled) {
-      border-color: var(--accent);
-      background: rgba(56, 189, 248, 0.12);
+    .badge {
+      background: rgba(56, 189, 248, 0.14);
+      color: var(--accent);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
     }
-
-    .option-btn.correct {
-      background: rgba(34, 197, 94, 0.2);
-      border-color: var(--success);
-      color: #bbf7d0;
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px;
+      margin-bottom: 16px;
     }
-
-    .option-btn.wrong {
-      background: rgba(239, 68, 68, 0.2);
-      border-color: var(--danger);
-      color: #fecaca;
+    h1 { font-size: 24px; margin: 0 0 8px; }
+    h2 { font-size: 19px; margin: 0 0 12px; }
+    p { margin: 0 0 12px; color: var(--muted); }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
     }
-
-    .score-circle {
-      width: 112px;
-      height: 112px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #0284c7, #22c55e);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      margin: 12px auto 18px;
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 12px;
+      margin: 14px 0 18px;
+    }
+    .stat-box {
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .stat-label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .stat-val {
+      font-size: 22px;
       font-weight: 800;
-      font-size: 1.75rem;
-      box-shadow: 0 8px 25px rgba(34, 197, 94, 0.35);
+      color: var(--accent);
     }
-
-    .blocked-card {
-      border: 1.5px solid rgba(239, 68, 68, 0.65);
-      background: linear-gradient(180deg, rgba(127, 29, 29, 0.38) 0%, #1e293b 100%);
+    label { display: block; font-size: 14px; color: var(--text); margin-bottom: 6px; }
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 11px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--card-2);
+      color: var(--text);
+      font-size: 15px;
     }
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 10px;
+      padding: 11px 18px;
+      font-size: 15px;
+      font-weight: 600;
+      transition: 0.15s ease;
+    }
+    .btn-primary { background: var(--accent); color: #062033; }
+    .btn-primary:hover { filter: brightness(1.08); }
+    .btn-success { background: var(--accent-2); color: #052e16; }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.05); }
+    .q-item { margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+    .q-item:last-child { border-bottom: none; margin-bottom: 0; }
+    .q-title { font-weight: 600; color: var(--text); margin-bottom: 10px; }
+    .option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 8px;
+      background: var(--card-2);
+      cursor: pointer;
+    }
+    .option:hover { border-color: var(--accent); }
+    .warn-box {
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: #fde68a;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      margin-bottom: 14px;
+    }
+    .result-score {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--accent-2);
+      margin: 8px 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+    th, td {
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+    th { color: var(--muted); font-weight: 600; }
+    .warn-num { color: var(--warn); font-weight: 700; }
+    .hidden { display: none; }
+    .status-msg { font-size: 14px; margin-top: 10px; color: var(--warn); }
   </style>
 </head>
-<body class="flex flex-col items-center p-4 sm:p-6">
-  <div class="w-full max-w-3xl">
-    <!-- Top Header -->
-    <header class="flex flex-wrap items-center justify-between gap-3 mb-5">
-      <div class="flex items-center gap-3">
-        <div class="text-3xl">🚆</div>
-        <div>
-          <h1 class="text-lg sm:text-xl font-bold text-slate-50 leading-tight">Қазақстан теміржол жүйесі</h1>
-          <span class="text-xs font-semibold text-sky-400 block">1-топ — «Теміржол стратегтері»</span>
-        </div>
-      </div>
-      <button onclick="openTeacherModal()" class="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/15 text-sm font-semibold text-slate-100 transition cursor-pointer">
-        Мұғалім кабинеті 🔒
-      </button>
-    </header>
-
-    <!-- Animated Railway Track -->
-    <div class="railway-board shadow-lg">
-      <div class="flex flex-wrap justify-between items-center text-xs text-slate-400 mb-6 gap-2">
-        <span>Бағыт: Достық → Ақтоғай → Астана → Жезқазған → Бейнеу → Ақтау</span>
-        <span id="progress-text" class="font-semibold text-sky-300">0 / 5 бекет</span>
-      </div>
-      <div class="track-wrapper">
-        <div class="rail-line"></div>
-        <div class="rail-progress" id="rail-progress"></div>
-        <div class="train" id="train">
-          <div class="smoke"></div>
-          <div class="locomotive">ҚТЖ</div>
-        </div>
-        <div class="stations" id="stations">
-          <div class="station passed" data-step="0">
-            <div class="station-dot"></div>
-            <span class="station-label">Достық</span>
-          </div>
-          <div class="station" data-step="1">
-            <div class="station-dot"></div>
-            <span class="station-label">Ақтоғай</span>
-          </div>
-          <div class="station" data-step="2">
-            <div class="station-dot"></div>
-            <span class="station-label">Астана</span>
-          </div>
-          <div class="station" data-step="3">
-            <div class="station-dot"></div>
-            <span class="station-label">Жезқазған</span>
-          </div>
-          <div class="station" data-step="4">
-            <div class="station-dot"></div>
-            <span class="station-label">Бейнеу</span>
-          </div>
-          <div class="station" data-step="5">
-            <div class="station-dot"></div>
-            <span class="station-label">Ақтау 🏁</span>
-          </div>
-        </div>
-      </div>
+<body>
+  <div class="container">
+    <div class="topbar">
+      <span class="badge">География • Швеция (5 сұрақ)</span>
+      <button class="btn-ghost" id="togglePanelBtn" type="button">Мұғалім панелі</button>
     </div>
 
-    <!-- Screen 1: Start Screen -->
-    <section id="start-screen" class="bg-slate-800 border border-white/10 rounded-2xl p-6 shadow-xl">
-      <h2 class="text-xl font-bold mb-2">Біліміңді тексер!</h2>
-      <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
-        5 сұраққа жауап беріп, пойызды Қытай шекарасынан Каспий теңізіне дейін жеткіз. Әр дұрыс жауап пойызды келесі бекетке жылжытады.
-      </p>
-
-      <div class="mt-4 p-3.5 rounded-xl bg-amber-500/15 border border-amber-500/45 text-amber-200 text-xs sm:text-sm leading-relaxed">
-        ⚠️ <strong>Ереже:</strong> Ойын басталған соң басқа қосымшаға немесе басқа бетке шығуға болмайды. Шығып кетсеңіз, тест бірден тоқтатылады және <strong>қайта тапсыруға рұқсат берілмейді</strong>.
-      </div>
-
-      <div class="my-5">
-        <label for="student-name" class="block text-sm text-slate-300 font-medium mb-2">Аты-жөніңіз (толық жазыңыз):</label>
-        <input type="text" id="student-name" placeholder="Мысалы: Әлихан Сәрсенов"
-          class="w-full px-4 py-3.5 rounded-xl bg-slate-900 border border-slate-600 text-white placeholder-slate-500 focus:outline-none focus:border-sky-400 text-base" />
-        <p id="name-error" class="hidden text-xs font-semibold text-rose-400 mt-2">Алдымен аты-жөніңізді жазыңыз!</p>
-      </div>
-
-      <button onclick="startQuiz()"
-        class="w-full py-3.5 px-5 rounded-xl bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-500 hover:to-blue-500 text-white font-bold text-base shadow-lg shadow-sky-500/25 transition cursor-pointer">
-        Ойынды бастау ▶
-      </button>
-    </section>
-
-    <!-- Screen 2: Quiz Screen -->
-    <section id="quiz-screen" class="hidden bg-slate-800 border border-white/10 rounded-2xl p-6 shadow-xl">
-      <div class="flex flex-wrap justify-between items-center gap-2 mb-4 text-sm font-semibold text-sky-400">
-        <div class="flex items-center gap-2.5">
-          <span id="q-counter">Сұрақ 1 / 5</span>
-          <span id="difficulty-badge" class="px-2.5 py-0.5 rounded-lg text-xs font-bold border">🟢 Оңай</span>
-        </div>
-        <span id="timer" class="px-3 py-1 rounded-lg bg-slate-900 border border-slate-700 text-slate-200">Уақыт: 0 сек</span>
-      </div>
-
-      <h3 id="q-text" class="text-base sm:text-lg font-semibold leading-relaxed mb-5 text-white"></h3>
-
-      <div id="options" class="flex flex-col gap-3"></div>
-
-      <div id="feedback" class="hidden mt-4 p-3.5 rounded-xl text-sm leading-relaxed"></div>
-
-      <button id="next-btn" onclick="nextQuestion()"
-        class="hidden w-full mt-4 py-3.5 px-5 rounded-xl bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-500 hover:to-blue-500 text-white font-bold text-base transition cursor-pointer">
-        Келесі сұрақ ➡
-      </button>
-    </section>
-
-    <!-- Screen 3: Finish Screen -->
-    <section id="result-screen" class="hidden bg-slate-800 border border-white/10 rounded-2xl p-6 shadow-xl text-center">
-      <h2 id="result-title" class="text-2xl font-bold">Жарайсың!</h2>
-      <p id="result-subtitle" class="text-slate-300 text-sm mt-1"></p>
-
-      <div class="score-circle">
-        <span id="final-score">5/5</span>
-        <small class="text-xs font-medium">ұпай</small>
-      </div>
-
-      <p id="final-time" class="text-slate-400 text-sm mb-3"></p>
-      <div class="inline-block px-4 py-2 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-sm font-semibold">
-        ✔ Нәтиже мұғалім кабинетіне сақталды.
-      </div>
-    </section>
-
-    <!-- Screen 4: Blocked / Rejected Screen -->
-    <section id="blocked-screen" class="hidden blocked-card rounded-2xl p-6 sm:p-8 shadow-xl text-center">
-      <div class="w-16 h-16 rounded-full bg-rose-500/20 border-2 border-rose-500 text-rose-300 text-3xl flex items-center justify-center mx-auto mb-4">
-        🚫
-      </div>
-      <h2 id="blocked-title" class="text-xl sm:text-2xl font-bold text-rose-300 mb-2">
-        Ойын тоқтатылды! Қайта тапсыру қабылданбады (Отклонено)
-      </h2>
-      <p id="blocked-reason" class="text-slate-200 text-sm sm:text-base leading-relaxed mb-4">
-        Сіз тест кезінде ойыннан шығып, басқа қосымшаға кірдіңіз. Жүйе бұл әрекетті тіркеді.
-      </p>
-      <div id="blocked-details" class="bg-slate-900/80 border border-slate-700 rounded-xl p-4 text-xs sm:text-sm text-slate-300 leading-relaxed text-left"></div>
-    </section>
-
-    <!-- Screen 5: Teacher Cabinet -->
-    <section id="teacher-screen" class="hidden bg-slate-800 border border-white/10 rounded-2xl p-6 shadow-xl">
-      <div class="flex flex-wrap justify-between items-center gap-3 pb-4 border-b border-slate-700">
+    <!-- 1. Кіру бөлімі -->
+    <section class="card" id="startScreen">
+      <h1>Швецияның инфрақұрылымдық, технологиялық және экологиялық дамуы</h1>
+      <p>Тест 5 сұрақтан тұрады. Жауаптарыңыз автоматты түрде ортақ базаға жіберіледі. Тест барысында басқа қойындыға (вкладка) өтпеңіз — ол тіркеледі.</p>
+      <div class="grid-2" style="margin: 16px 0;">
         <div>
-          <h2 class="text-xl font-bold">Мұғалім кабинеті 📊</h2>
-          <p class="text-slate-400 text-xs sm:text-sm">Тапсырған оқушылар және ереже бұзушылықтар</p>
+          <label for="studentName">Аты-жөніңіз *</label>
+          <input type="text" id="studentName" placeholder="Мысалы: Жұмабай Айбек" required />
         </div>
-        <div class="flex flex-wrap gap-2">
-          <button onclick="openClearModal()" class="px-3.5 py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-200 text-xs sm:text-sm font-semibold transition cursor-pointer">
-            Тазалау / Бұғаттан шығару
-          </button>
-          <button onclick="closeTeacherScreen()" class="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-white text-xs sm:text-sm font-semibold transition cursor-pointer">
-            Шығу ✕
-          </button>
+        <div>
+          <label for="studentGroup">Топ / Сынып *</label>
+          <input type="text" id="studentGroup" placeholder="Мысалы: География-301" required />
         </div>
       </div>
-
-      <div class="overflow-x-auto mt-4">
-        <table class="w-full border-collapse text-left text-xs sm:text-sm">
-          <thead>
-            <tr class="bg-slate-900/60 text-sky-400 border-b border-slate-700">
-              <th class="p-3">#</th>
-              <th class="p-3">Оқушының аты-жөні</th>
-              <th class="p-3">Ұпай</th>
-              <th class="p-3">Мәртебе</th>
-              <th class="p-3">Уақыт</th>
-              <th class="p-3">Күні / Сағаты</th>
-            </tr>
-          </thead>
-          <tbody id="results-body" class="divide-y divide-slate-700/70"></tbody>
-        </table>
-      </div>
-      <div id="empty-msg" class="hidden text-center text-slate-400 py-8 text-sm">
-        Әзірге ешкім тест тапсырған жоқ.
-      </div>
+      <button class="btn-primary" id="startTestBtn" type="button">Тестті бастау</button>
+      <div class="status-msg" id="startError"></div>
     </section>
-  </div>
 
-  <!-- Password Modal -->
-  <div id="password-modal" class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-    <div class="bg-slate-800 border border-slate-600 rounded-2xl p-6 w-full max-w-sm shadow-2xl">
-      <h3 class="text-lg font-bold mb-1">Мұғалім кабинетіне кіру</h3>
-      <p class="text-slate-400 text-xs sm:text-sm mb-4">Құпиясөзді енгізіңіз:</p>
-      <form onsubmit="verifyTeacher(event)">
-        <input type="password" id="teacher-pass" placeholder="Құпиясөз..."
-          class="w-full px-3.5 py-3 rounded-xl bg-slate-900 border border-slate-600 text-white placeholder-slate-500 focus:outline-none focus:border-sky-400 mb-2" />
-        <p id="pass-error" class="hidden text-rose-400 text-xs font-semibold mb-3">❌ Құпиясөз қате!</p>
-        <div class="flex justify-end gap-2 mt-3">
-          <button type="button" onclick="closeTeacherModal()" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-semibold cursor-pointer">
-            Болдырмау
-          </button>
-          <button type="submit" class="px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-sm font-bold cursor-pointer">
-            Кіру
-          </button>
-        </div>
+    <!-- 2. Тест бөлімі -->
+    <section class="card hidden" id="quizScreen">
+      <div class="warn-box" id="antiCheatAlert">
+        Қойындыдан шығу саны: <strong id="tabSwitchCount">0</strong>
+      </div>
+      <form id="quizForm">
+        <div id="questionsContainer"></div>
+        <button class="btn-success" type="submit" id="submitBtn">Жауапты жіберу</button>
+        <div class="status-msg" id="submitStatus"></div>
       </form>
-    </div>
+    </section>
+
+    <!-- 3. Нәтиже бөлімі -->
+    <section class="card hidden" id="resultScreen">
+      <h2>Тест аяқталды</h2>
+      <p id="resultStudentInfo"></p>
+      <div class="result-score" id="scoreText"></div>
+      <p id="saveStatus"></p>
+      <button class="btn-ghost" id="restartBtn" type="button">Басты бетке оралу</button>
+    </section>
+
+    <!-- 4. Мұғалім панелі -->
+    <section class="card hidden" id="teacherScreen">
+      <h2>Мұғалім панелі — Жалпы статистика және нәтижелер</h2>
+      <div id="teacherAuthBox">
+        <label for="teacherPass">Құпиясөзді енгізіңіз</label>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:6px;">
+          <input type="password" id="teacherPass" placeholder="Құпиясөз" style="max-width:260px;" />
+          <button class="btn-primary" id="loginTeacherBtn" type="button">Кіру</button>
+        </div>
+        <div class="status-msg" id="authError"></div>
+      </div>
+
+      <div id="teacherDashboard" class="hidden">
+        <div class="stats-grid">
+          <div class="stat-box">
+            <div class="stat-label">Тапсырған студент саны</div>
+            <div class="stat-val" id="statCount">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Орташа балл</div>
+            <div class="stat-val" id="statAvg">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Ең жоғары балл</div>
+            <div class="stat-val" id="statMax">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Вкладка ауысу саны</div>
+            <div class="stat-val" id="statSwitches" style="color: var(--warn);">0</div>
+          </div>
+        </div>
+
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>№</th>
+                <th>Студенттің аты-жөні</th>
+                <th>Топ / Сынып</th>
+                <th>Нәтиже (балл)</th>
+                <th>Вкладкадан шығу</th>
+                <th>Тапсырған уақыты</th>
+              </tr>
+            </thead>
+            <tbody id="resultsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
   </div>
 
-  <!-- Clear Confirmation Modal (No native confirm()) -->
-  <div id="clear-modal" class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-    <div class="bg-slate-800 border border-slate-600 rounded-2xl p-6 w-full max-w-sm shadow-2xl">
-      <h3 class="text-lg font-bold mb-2">Нәтижелерді тазалау</h3>
-      <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-4">
-        Барлық оқушылардың нәтижелерін өшіріп, бұғатталған құрылғыны қайта ашу керек пе?
-      </p>
-      <div class="flex justify-end gap-2">
-        <button onclick="closeClearModal()" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-semibold cursor-pointer">
-          Жоқ
-        </button>
-        <button onclick="confirmClearResults()" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-sm font-bold cursor-pointer">
-          Иә, тазалау
-        </button>
-      </div>
-    </div>
-  </div>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
   <script>
-    const TEACHER_PASSWORD = "KTZ2026";
-    const STORAGE_KEY = "kz_railway_quiz_results_v3";
-    const LOCK_KEY = "kz_railway_quiz_device_lock_v3";
+    const firebaseConfig = {
+      apiKey: "AIzaSyDwBZaC2s_lw6X2UBNaqLqpxk8K_W_ybvw",
+      authDomain: "sweden-826eb.firebaseapp.com",
+      databaseURL: "https://sweden-826eb-default-rtdb.firebaseio.com",
+      projectId: "sweden-826eb",
+      storageBucket: "sweden-826eb.firebasestorage.app",
+      messagingSenderId: "674396964744",
+      appId: "1:674396964744:web:9ef47496342155fc98dc3d",
+      measurementId: "G-6H91X38JVQ"
+    };
 
-    const questions = [
+    const TEACHER_PASSWORD = "admin123";
+
+    const QUESTIONS = [
       {
-        difficulty: "easy",
-        difficultyLabel: "🟢 Оңай",
-        q: "Қазақстан теміржол желісінің жалпы ұзындығы қанша және ел ішіндегі жүк айналымының неше пайызын қамтамасыз етеді?",
-        options: [
-          "16 000 км-ден астам, жүк айналымының шамамен 60%-ы",
-          "8 500 км, жүк айналымының 35%-ы",
-          "24 000 км, жүк айналымының 85%-ы",
-          "11 000 км, жүк айналымының 45%-ы"
-        ],
-        answer: 0,
-        explanation: "Дұрыс! Қазақстан теміржолының жалпы пайдалану ұзындығы 16 мың шақырымнан асады және ел ішіндегі жүк айналымының шамамен 60%-ын «Қазақстан темір жолы» (ҚТЖ) тасымалдайды."
+        id: "q1",
+        text: "1. Швеция халқының орталықтандырылған электр желісімен қамтамасыз етілу деңгейі шамамен қанша?",
+        options: ["75%", "88%", "100%", "64%"],
+        correct: 2
       },
       {
-        difficulty: "medium",
-        difficultyLabel: "🟡 Орташа",
-        q: "Қытайдан Еуропаға контейнерлік жүк тасымалдайтын пойыз Достық бекетіне кіргенде қандай техникалық операция міндетті түрде орындалады?",
-        options: [
-          "Жүктерді 1520 мм-ден 1435 мм жолтабанға ауыстырып тиеу",
-          "Жүктерді 1435 мм-ден 1520 мм жолтабанға ауыстырып тиеу",
-          "Тек тепловозды электровозға ауыстыру",
-          "Вагондарды теңіз паромдарына тиеу"
-        ],
-        answer: 1,
-        explanation: "Дұрыс! Қытайда 1435 мм стандартты жолтабан, ал Қазақстан мен ТМД елдерінде 1520 мм кең жолтабан қолданылады. Сондықтан шекарадан өткенде жүктер 1435 мм-ден 1520 мм-ге ауыстырылады."
+        id: "q2",
+        text: "2. Швецияны Даниямен және құрлықтық Еуропамен тікелей байланыстыратын ірі көлік нысаны қалай аталады?",
+        options: ["Эресунн көпірі", "Босфор туннелі", "Ла-Манш көпірі", "Каттегат бөгеті"],
+        correct: 0
       },
       {
-        difficulty: "medium",
-        difficultyLabel: "🟡 Орташа",
-        q: "Солтүстіктегі астықты өңірлер мен орталықтағы өнеркәсіп орталықтарын оңтүстікпен тікелей байланыстыратын магистраль және оның негізгі бағыты қайсы?",
-        options: [
-          "Түрксіб магистралі (Арыс — Алматы — Семей — Локоть)",
-          "Орынбор — Ташкент бағыты (Ақтөбе — Қызылорда — Сарыағаш)",
-          "Трансқазақстандық магистраль (Петропавл — Астана — Қарағанды — Мойынты — Шу)",
-          "Орталық дәліз (Қарағанды — Жезқазған — Бейнеу — Ақтау)"
-        ],
-        answer: 2,
-        explanation: "Дұрыс! Трансқазақстандық магистраль (Петропавл — Көкшетау — Астана — Қарағанды — Мойынты — Шу) солтүстіктің астықты өңірлері мен орталық өнеркәсіп орталықтарын оңтүстікпен байланыстырады."
+        id: "q3",
+        text: "3. Швециядағы танымал бірыңғай цифрлық сәйкестендіру және мобильді төлем жүйелері қайсылар?",
+        options: ["WeChat Pay және Alipay", "BankID және Swish", "Revolut және Monzo", "PayPal және Zelle"],
+        correct: 1
       },
       {
-        difficulty: "hard",
-        difficultyLabel: "🔴 Қиын",
-        q: "Қарағанды мен Жезқазғаннан шыққан ауыр металлургия жүктерін Каспий порттарына (Ақтау, Құрық) ең төте жолмен жеткізу үшін пойыз қай түйінді станциялар арқылы өтеді?",
+        id: "q4",
+        text: "4. Швецияның электр энергиясын өндіру құрылымында қандай көздер басым?",
         options: [
-          "Мойынты — Шу — Арыс — Қызылорда арқылы",
-          "Жарық — Сексеуіл — Шалқар — Бейнеу арқылы",
-          "Астана — Тобыл — Ақтөбе — Орал арқылы",
-          "Ақтоғай — Алматы — Тараз — Шымкент арқылы"
+          "Көмір және табиғи газ",
+          "Су энергетикасы, жел энергетикасы және атом энергетикасы",
+          "Тек күн электр станциялары",
+          "Мазут және шымтезек"
         ],
-        answer: 1,
-        explanation: "Дұрыс! Орталық дәліз Қарағандыдан Жарық станциясы арқылы Жезқазғанға, одан әрі Сексеуіл — Шалқар — Бейнеу тізбегімен Каспийдегі Ақтау және Құрық порттарына тікелей шығады."
+        correct: 1
       },
       {
-        difficulty: "hard",
-        difficultyLabel: "🔴 Қиын",
-        q: "Қытай шекарасындағы Достық және Алтынкөл құрғақ порттары арқылы кіретін транзиттік жүк ағындарының бағытталу ерекшелігі неде?",
-        options: [
-          "Екеуі де жүктерді тек Семей арқылы Сібірге бағыттайды",
-          "Достық Ақтоғай мен Мойынты арқылы Орталық/Солтүстікке, ал Алтынкөл Алматы мен Шу арқылы Оңтүстікке бағыттайды",
-          "Алтынкөл тек мұнай құбырларына, ал Достық тек жолаушылар тасымалына арналған",
-          "Достық Каспийге тікелей шығады, ал Алтынкөл Астанаға тікелей барады"
-        ],
-        answer: 1,
-        explanation: "Дұрыс! Достық бекеті Ақтоғай торабы арқылы Мойынты мен Астанаға (Орталық/Солтүстік және Еуропа бағыты), ал Алтынкөл Алматы мен Шу арқылы Оңтүстік пен Орталық Азияға бағытталады."
+        id: "q5",
+        text: "5. Швецияда тұрмыстық қатты қалдықтардың полигондарға көмілетін үлесі қанша?",
+        options: ["1%-дан аз", "25%-ға жуық", "40%", "60%-дан астам"],
+        correct: 0
       }
     ];
 
-    let currentIdx = 0;
-    let score = 0;
-    let studentName = "";
-    let startTime = 0;
-    let timerInterval = null;
-    let isQuizActive = false;
-    let isModalOpen = false;
+    let db = null;
+    try {
+      if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+      }
+      db = firebase.database();
+    } catch (e) {
+      console.error("Firebase init error:", e);
+    }
 
-    function hideAllScreens() {
-      ["start-screen", "quiz-screen", "result-screen", "blocked-screen", "teacher-screen"].forEach(id => {
-        document.getElementById(id).classList.add("hidden");
+    let studentData = { name: "", group: "" };
+    let tabSwitches = 0;
+    let testActive = false;
+
+    const startScreen = document.getElementById("startScreen");
+    const quizScreen = document.getElementById("quizScreen");
+    const resultScreen = document.getElementById("resultScreen");
+    const teacherScreen = document.getElementById("teacherScreen");
+
+    function showSection(sec) {
+      [startScreen, quizScreen, resultScreen, teacherScreen].forEach(el => el.classList.add("hidden"));
+      sec.classList.remove("hidden");
+    }
+
+    document.addEventListener("visibilitychange", () => {
+      if (testActive && document.hidden) {
+        tabSwitches++;
+        document.getElementById("tabSwitchCount").textContent = tabSwitches;
+      }
+    });
+
+    function renderQuestions() {
+      const container = document.getElementById("questionsContainer");
+      container.innerHTML = "";
+      QUESTIONS.forEach((q, idx) => {
+        const div = document.createElement("div");
+        div.className = "q-item";
+        div.innerHTML = `<div class="q-title">${q.text}</div>` +
+          q.options.map((opt, oIdx) => `
+            <label class="option">
+              <input type="radio" name="q_${idx}" value="${oIdx}" required />
+              <span>${opt}</span>
+            </label>
+          `).join("");
+        container.appendChild(div);
       });
     }
 
-    function checkLockState() {
-      const lockRaw = localStorage.getItem(LOCK_KEY);
-      if (!lockRaw) return false;
-      const lock = JSON.parse(lockRaw);
-      hideAllScreens();
-      document.getElementById("blocked-screen").classList.remove("hidden");
+    document.getElementById("startTestBtn").addEventListener("click", () => {
+      const name = document.getElementById("studentName").value.trim();
+      const group = document.getElementById("studentGroup").value.trim();
+      const errEl = document.getElementById("startError");
 
-      if (lock.type === "cheated") {
-        document.getElementById("blocked-title").textContent = "Ойын тоқтатылды! Қайта тапсыру қабылданбады (Отклонено)";
-        document.getElementById("blocked-reason").textContent =
-          `${lock.name}, сіз тест кезінде ойыннан шығып, басқа қосымшаға немесе бетке өттіңіз. Жүйе бұл әрекетті тіркеді және тестті толық аяқтады.`;
-        document.getElementById("blocked-details").innerHTML =
-          `<strong>Оқушы:</strong> ${lock.name}<br>` +
-          `<strong>Мәртебе:</strong> <span class="text-rose-400 font-semibold">Басқа қосымшаға шығып кетті (${lock.questionNum}-сұрақта)</span><br>` +
-          `<strong>Ұпай:</strong> ${lock.score} / ${questions.length} &nbsp;|&nbsp; <strong>Уақыты:</strong> ${lock.date}`;
-      } else {
-        document.getElementById("blocked-title").textContent = "Сіз тестті тапсырып қойдыңыз";
-        document.getElementById("blocked-reason").textContent =
-          `${lock.name}, бұл құрылғыдан тест бір рет тапсырылған. Қайта орындауға рұқсат жоқ.`;
-        document.getElementById("blocked-details").innerHTML =
-          `<strong>Оқушы:</strong> ${lock.name}<br>` +
-          `<strong>Нәтиже:</strong> ${lock.score} / ${questions.length} ұпай &nbsp;|&nbsp; <strong>Уақыты:</strong> ${lock.date}`;
+      if (!name || !group) {
+        errEl.textContent = "Аты-жөніңіз бен тобыңызды міндетті түрде жазыңыз.";
+        return;
       }
-      return true;
-    }
+      errEl.textContent = "";
+      studentData = { name, group };
+      tabSwitches = 0;
+      document.getElementById("tabSwitchCount").textContent = "0";
+      renderQuestions();
+      testActive = true;
+      showSection(quizScreen);
+    });
 
-    function terminateForCheating() {
-      if (!isQuizActive || isModalOpen) return;
-      isQuizActive = false;
-      clearInterval(timerInterval);
+    document.getElementById("quizForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!testActive) return;
+      testActive = false;
 
-      const elapsed = Math.floor((Date.now() - startTime) / 1000);
-      const nowStr = new Date().toLocaleString("kk-KZ");
-      const stoppedQuestion = currentIdx + 1;
+      let score = 0;
+      QUESTIONS.forEach((q, idx) => {
+        const selected = document.querySelector(`input[name="q_${idx}"]:checked`);
+        const val = selected ? Number(selected.value) : -1;
+        if (val === q.correct) score++;
+      });
 
-      const entry = {
-        name: studentName,
+      const payload = {
+        name: studentData.name,
+        group: studentData.group,
         score: score,
-        total: questions.length,
-        time: elapsed,
-        status: "cheated",
-        stoppedAt: stoppedQuestion,
-        date: nowStr
+        total: QUESTIONS.length,
+        tabSwitches: tabSwitches,
+        submittedAt: new Date().toISOString()
       };
 
-      saveResult(entry);
-      localStorage.setItem(LOCK_KEY, JSON.stringify({
-        type: "cheated",
-        name: studentName,
-        score: score,
-        questionNum: stoppedQuestion,
-        date: nowStr
-      }));
+      document.getElementById("resultStudentInfo").textContent =
+        `${payload.name} (${payload.group})`;
+      document.getElementById("scoreText").textContent =
+        `${payload.score} / ${payload.total} балл`;
 
-      checkLockState();
-    }
+      const saveStatus = document.getElementById("saveStatus");
+      showSection(resultScreen);
 
-    // Detect switching apps, minimizing browser, or switching tabs
-    document.addEventListener("visibilitychange", () => {
-      if (document.hidden && isQuizActive) {
-        terminateForCheating();
-      }
-    });
-
-    window.addEventListener("blur", () => {
-      if (isQuizActive && !isModalOpen) {
-        terminateForCheating();
-      }
-    });
-
-    function updateTrainPosition(step) {
-      const pct = (step / questions.length) * 92;
-      document.getElementById("train").style.left = (4 + pct) + "%";
-      document.getElementById("rail-progress").style.width = pct + "%";
-      document.getElementById("progress-text").textContent = `${step} / ${questions.length} бекет`;
-
-      document.querySelectorAll(".station").forEach(st => {
-        const s = parseInt(st.getAttribute("data-step"), 10);
-        if (s <= step) st.classList.add("passed");
-        else st.classList.remove("passed");
-      });
-    }
-
-    function startQuiz() {
-      if (checkLockState()) return;
-
-      const inputEl = document.getElementById("student-name");
-      const errEl = document.getElementById("name-error");
-      const input = inputEl.value.trim();
-      if (!input) {
-        errEl.classList.remove("hidden");
-        inputEl.focus();
+      if (!db) {
+        saveStatus.textContent = "База қосылмады — браузер консолін тексер.";
         return;
       }
-      errEl.classList.add("hidden");
 
-      studentName = input;
-      currentIdx = 0;
-      score = 0;
-      isQuizActive = true;
-      updateTrainPosition(0);
-
-      hideAllScreens();
-      document.getElementById("quiz-screen").classList.remove("hidden");
-
-      startTime = Date.now();
-      document.getElementById("timer").textContent = "Уақыт: 0 сек";
-      timerInterval = setInterval(() => {
-        const sec = Math.floor((Date.now() - startTime) / 1000);
-        document.getElementById("timer").textContent = `Уақыт: ${sec} сек`;
-      }, 1000);
-
-      renderQuestion();
-    }
-
-    function renderQuestion() {
-      const qObj = questions[currentIdx];
-      document.getElementById("q-counter").textContent = `Сұрақ ${currentIdx + 1} / ${questions.length}`;
-
-      const diffBadge = document.getElementById("difficulty-badge");
-      diffBadge.textContent = qObj.difficultyLabel;
-      diffBadge.className = "px-2.5 py-0.5 rounded-lg text-xs font-bold border ";
-      if (qObj.difficulty === "easy") {
-        diffBadge.className += "bg-emerald-500/15 text-emerald-300 border-emerald-500/40";
-      } else if (qObj.difficulty === "medium") {
-        diffBadge.className += "bg-amber-500/15 text-amber-300 border-amber-500/40";
-      } else {
-        diffBadge.className += "bg-rose-500/15 text-rose-300 border-rose-500/40";
+      try {
+        await db.ref("sweden_quiz_results").push(payload);
+        saveStatus.textContent = "Нәтиже ортақ базаға сәтті сақталды.";
+      } catch (err) {
+        saveStatus.textContent = "Базаға сақтау кезінде қате шықты: " + err.message;
       }
+    });
 
-      document.getElementById("q-text").textContent = qObj.q;
+    document.getElementById("restartBtn").addEventListener("click", () => {
+      document.getElementById("studentName").value = "";
+      document.getElementById("studentGroup").value = "";
+      showSection(startScreen);
+    });
 
-      const fb = document.getElementById("feedback");
-      fb.className = "hidden mt-4 p-3.5 rounded-xl text-sm leading-relaxed";
-      document.getElementById("next-btn").classList.add("hidden");
-
-      const optsDiv = document.getElementById("options");
-      optsDiv.innerHTML = "";
-      const letters = ["A", "B", "C", "D"];
-
-      qObj.options.forEach((opt, idx) => {
-        const btn = document.createElement("button");
-        btn.className = "option-btn";
-        btn.innerHTML = `<span class="w-7 h-7 rounded-lg bg-slate-800 inline-flex items-center justify-center font-bold text-xs shrink-0">${letters[idx]}</span><span>${opt}</span>`;
-        btn.onclick = () => selectAnswer(idx);
-        optsDiv.appendChild(btn);
-      });
-    }
-
-    function selectAnswer(selectedIdx) {
-      if (!isQuizActive) return;
-      const qObj = questions[currentIdx];
-      const buttons = document.querySelectorAll(".option-btn");
-      buttons.forEach(b => b.disabled = true);
-
-      const isCorrect = selectedIdx === qObj.answer;
-      buttons[selectedIdx].classList.add(isCorrect ? "correct" : "wrong");
-      if (!isCorrect) {
-        buttons[qObj.answer].classList.add("correct");
+    document.getElementById("togglePanelBtn").addEventListener("click", () => {
+      if (!teacherScreen.classList.contains("hidden")) {
+        showSection(startScreen);
       } else {
-        score++;
-        updateTrainPosition(score);
+        showSection(teacherScreen);
       }
+    });
 
-      const fb = document.getElementById("feedback");
-      fb.textContent = qObj.explanation;
-      fb.classList.remove("hidden");
-      if (isCorrect) {
-        fb.classList.add("bg-emerald-500/15", "border", "border-emerald-500/40", "text-emerald-300");
-      } else {
-        fb.classList.add("bg-rose-500/15", "border", "border-rose-500/40", "text-rose-300");
-      }
-
-      const nextBtn = document.getElementById("next-btn");
-      nextBtn.textContent = currentIdx === questions.length - 1 ? "Нәтижені көру 🏁" : "Келесі сұрақ ➡";
-      nextBtn.classList.remove("hidden");
-    }
-
-    function nextQuestion() {
-      currentIdx++;
-      if (currentIdx < questions.length) {
-        renderQuestion();
-      } else {
-        finishQuiz();
-      }
-    }
-
-    function finishQuiz() {
-      isQuizActive = false;
-      clearInterval(timerInterval);
-      const elapsed = Math.floor((Date.now() - startTime) / 1000);
-      const nowStr = new Date().toLocaleString("kk-KZ");
-
-      hideAllScreens();
-      document.getElementById("result-screen").classList.remove("hidden");
-
-      document.getElementById("result-title").textContent = score >= 4 ? `Жарайсың, ${studentName}!` : `Жақсы талпыныс, ${studentName}!`;
-      document.getElementById("result-subtitle").textContent = score === 5
-        ? "Пойыз барлық бекеттен сәтті өтіп, Ақтау портына жетті!"
-        : "Нәтижеңіз мұғалім кабинетіне сақталды.";
-      document.getElementById("final-score").textContent = `${score}/${questions.length}`;
-      document.getElementById("final-time").textContent = `Жұмсалған уақыт: ${elapsed} секунд`;
-
-      saveResult({
-        name: studentName,
-        score: score,
-        total: questions.length,
-        time: elapsed,
-        status: "completed",
-        date: nowStr
-      });
-
-      localStorage.setItem(LOCK_KEY, JSON.stringify({
-        type: "completed",
-        name: studentName,
-        score: score,
-        date: nowStr
-      }));
-    }
-
-    function saveResult(entry) {
-      const existing = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-      existing.unshift(entry);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
-    }
-
-    function openTeacherModal() {
-      isModalOpen = true;
-      document.getElementById("pass-error").classList.add("hidden");
-      document.getElementById("teacher-pass").value = "";
-      document.getElementById("password-modal").classList.remove("hidden");
-      setTimeout(() => document.getElementById("teacher-pass").focus(), 60);
-    }
-
-    function closeTeacherModal() {
-      isModalOpen = false;
-      document.getElementById("password-modal").classList.add("hidden");
-    }
-
-    function verifyTeacher(e) {
-      e.preventDefault();
-      const val = document.getElementById("teacher-pass").value.trim();
-      if (val === TEACHER_PASSWORD) {
-        closeTeacherModal();
-        showTeacherScreen();
-      } else {
-        document.getElementById("pass-error").classList.remove("hidden");
-      }
-    }
-
-    function showTeacherScreen() {
-      isQuizActive = false;
-      clearInterval(timerInterval);
-      hideAllScreens();
-      document.getElementById("teacher-screen").classList.remove("hidden");
-
-      const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-      const tbody = document.getElementById("results-body");
-      const emptyMsg = document.getElementById("empty-msg");
-      tbody.innerHTML = "";
-
-      if (data.length === 0) {
-        emptyMsg.classList.remove("hidden");
+    document.getElementById("loginTeacherBtn").addEventListener("click", () => {
+      const pass = document.getElementById("teacherPass").value;
+      const authError = document.getElementById("authError");
+      if (pass !== TEACHER_PASSWORD) {
+        authError.textContent = "Құпиясөз қате.";
         return;
       }
-      emptyMsg.classList.add("hidden");
+      authError.textContent = "";
+      document.getElementById("teacherAuthBox").classList.add("hidden");
+      document.getElementById("teacherDashboard").classList.remove("hidden");
+      listenResults();
+    });
 
-      data.forEach((item, i) => {
-        const isCheat = item.status === "cheated";
-        const scoreBadgeClass = isCheat
-          ? "bg-rose-500/20 text-rose-300"
-          : (item.score >= 4 ? "bg-emerald-500/20 text-emerald-300" : (item.score >= 3 ? "bg-amber-500/20 text-amber-300" : "bg-rose-500/20 text-rose-300"));
-        const statusHtml = isCheat
-          ? `<span class="px-2.5 py-1 rounded-md bg-rose-600 text-white font-bold text-xs whitespace-nowrap">🚫 Шығып кетті (${item.stoppedAt}-сұрақ)</span>`
-          : `<span class="px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-300 font-bold text-xs whitespace-nowrap">✔ Аяқтады</span>`;
+    function listenResults() {
+      const tbody = document.getElementById("resultsTableBody");
+      if (!db) {
+        tbody.innerHTML = `<tr><td colspan="6">База қосылмаған.</td></tr>`;
+        return;
+      }
 
-        const tr = document.createElement("tr");
-        if (isCheat) tr.className = "bg-rose-500/10";
-        tr.innerHTML = `
-          <td class="p-3">${i + 1}</td>
-          <td class="p-3 font-bold text-white">${item.name}</td>
-          <td class="p-3"><span class="px-2 py-1 rounded-md font-bold text-xs ${scoreBadgeClass}">${item.score} / ${item.total}</span></td>
-          <td class="p-3">${statusHtml}</td>
-          <td class="p-3">${item.time} сек</td>
-          <td class="p-3 text-slate-400">${item.date}</td>
-        `;
-        tbody.appendChild(tr);
+      db.ref("sweden_quiz_results").on("value", (snapshot) => {
+        const data = snapshot.val();
+        tbody.innerHTML = "";
+        if (!data) {
+          document.getElementById("statCount").textContent = "0";
+          document.getElementById("statAvg").textContent = "0";
+          document.getElementById("statMax").textContent = "0";
+          document.getElementById("statSwitches").textContent = "0";
+          tbody.innerHTML = `<tr><td colspan="6">Әзірге нәтиже жоқ.</td></tr>`;
+          return;
+        }
+
+        const rows = Object.values(data).sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
+        const totalQuestions = rows[0]?.total ?? QUESTIONS.length;
+        const scores = rows.map(r => Number(r.score) || 0);
+        const avgScore = (scores.reduce((acc, v) => acc + v, 0) / rows.length).toFixed(1);
+        const maxScore = Math.max(...scores);
+        const totalSwitches = rows.reduce((acc, r) => acc + (Number(r.tabSwitches) || 0), 0);
+
+        document.getElementById("statCount").textContent = String(rows.length);
+        document.getElementById("statAvg").textContent = `${avgScore} / ${totalQuestions}`;
+        document.getElementById("statMax").textContent = `${maxScore} / ${totalQuestions}`;
+        document.getElementById("statSwitches").textContent = String(totalSwitches);
+
+        rows.forEach((item, i) => {
+          const tr = document.createElement("tr");
+          const dt = item.submittedAt ? new Date(item.submittedAt).toLocaleString("kk-KZ") : "-";
+          const sw = Number(item.tabSwitches) || 0;
+          tr.innerHTML = `
+            <td>${i + 1}</td>
+            <td>${escapeHtml(item.name)}</td>
+            <td>${escapeHtml(item.group)}</td>
+            <td><strong>${item.score ?? 0} / ${item.total ?? totalQuestions}</strong></td>
+            <td class="${sw > 0 ? "warn-num" : ""}">${sw}</td>
+            <td>${dt}</td>
+          `;
+          tbody.appendChild(tr);
+        });
       });
     }
 
-    function closeTeacherScreen() {
-      if (!checkLockState()) {
-        hideAllScreens();
-        document.getElementById("start-screen").classList.remove("hidden");
-      }
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
     }
-
-    function openClearModal() {
-      document.getElementById("clear-modal").classList.remove("hidden");
-    }
-
-    function closeClearModal() {
-      document.getElementById("clear-modal").classList.add("hidden");
-    }
-
-    function confirmClearResults() {
-      closeClearModal();
-      localStorage.removeItem(STORAGE_KEY);
-      localStorage.removeItem(LOCK_KEY);
-      updateTrainPosition(0);
-      showTeacherScreen();
-    }
-
-    window.addEventListener("DOMContentLoaded", () => {
-      checkLockState();
-    });
   </script>
 </body>
 </html>
-```
