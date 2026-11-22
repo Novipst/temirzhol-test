@@ -25,6 +25,12 @@
       color: var(--text);
       line-height: 1.5;
     }
+    .no-copy {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
     .container {
       max-width: 860px;
       margin: 0 auto;
@@ -157,6 +163,7 @@
     .warn-num { color: var(--warn); font-weight: 700; }
     .hidden { display: none; }
     .status-msg { font-size: 14px; margin-top: 10px; color: var(--warn); }
+    .hint-text { font-size: 12px; color: var(--muted); margin-top: 6px; }
   </style>
 </head>
 <body>
@@ -169,15 +176,17 @@
     <!-- 1. Кіру бөлімі -->
     <section class="card" id="startScreen">
       <h1>Швецияның инфрақұрылымдық, технологиялық және экологиялық дамуы</h1>
-      <p>Тест 5 сұрақтан тұрады. Жауаптарыңыз автоматты түрде ортақ базаға жіберіледі. Тест барысында басқа қойындыға (вкладка) өтпеңіз — ол тіркеледі.</p>
+      <p>Тест 5 сұрақтан тұрады. Тек тізімдегі нақты студенттер ғана тапсыра алады (Фамилия + Аты). Смайлик пен бөгде таңбалар қабылданбайды. Вкладкадан 3 рет шықсаңыз — тест автоматты түрде аяқталады.</p>
       <div class="grid-2" style="margin: 16px 0;">
         <div>
-          <label for="studentName">Аты-жөніңіз *</label>
-          <input type="text" id="studentName" placeholder="Мысалы: Жұмабай Айбек" required />
+          <label for="studentName">Фамилия және Аты *</label>
+          <input type="text" id="studentName" list="allowedStudentsList" placeholder="Мысалы: Ибрагимов Бексултан" autocomplete="off" required />
+          <datalist id="allowedStudentsList"></datalist>
+          <div class="hint-text">Тізімнен таңдаңыз немесе тек әріппен жазыңыз (смайликсіз).</div>
         </div>
         <div>
-          <label for="studentGroup">Топ / Сынып *</label>
-          <input type="text" id="studentGroup" placeholder="Мысалы: География-301" required />
+          <label for="studentGroup">Топ *</label>
+          <input type="text" id="studentGroup" placeholder="Мысалы: География 1 топ" autocomplete="off" required />
         </div>
       </div>
       <button class="btn-primary" id="startTestBtn" type="button">Тестті бастау</button>
@@ -185,9 +194,9 @@
     </section>
 
     <!-- 2. Тест бөлімі -->
-    <section class="card hidden" id="quizScreen">
+    <section class="card no-copy hidden" id="quizScreen">
       <div class="warn-box" id="antiCheatAlert">
-        Қойындыдан шығу саны: <strong id="tabSwitchCount">0</strong>
+        Қойындыдан шығу саны: <strong id="tabSwitchCount">0</strong> / 3 • Көшіру бұғатталған
       </div>
       <form id="quizForm">
         <div id="questionsContainer"></div>
@@ -242,8 +251,8 @@
             <thead>
               <tr>
                 <th>№</th>
-                <th>Студенттің аты-жөні</th>
-                <th>Топ / Сынып</th>
+                <th>Студент (Фамилия Аты)</th>
+                <th>Топ</th>
                 <th>Нәтиже (балл)</th>
                 <th>Вкладкадан шығу</th>
                 <th>Тапсырған уақыты</th>
@@ -272,6 +281,27 @@
     };
 
     const TEACHER_PASSWORD = "admin123";
+    const MAX_TAB_SWITCHES = 3;
+
+    // Рұқсат етілген тізім (Жұмабай Айбек, Дайрабай Қымбат, Байманова Аружан алынып тасталды)
+    const ALLOWED_STUDENTS = [
+      "Абилдаш Улту",
+      "Азаматқызы Луиза",
+      "Анарбаев Жанатбек",
+      "Ахметова Камила",
+      "Әкімхан Әсел",
+      "Едигеева Айзере",
+      "Ерболат Шынар",
+      "Жанайбек Ұлдана",
+      "Жарқын Ақерке",
+      "Ибрагимов Бексултан",
+      "Қанатұлы Берекет",
+      "Қалихан Адилхан",
+      "Нүсіпжан Мансұр",
+      "Умирбек Сымбат",
+      "Элимбай Жансая",
+      "Есенгелді Оңлас"
+    ];
 
     const QUESTIONS = [
       {
@@ -311,6 +341,60 @@
       }
     ];
 
+    // Datalist толтыру
+    const datalistEl = document.getElementById("allowedStudentsList");
+    ALLOWED_STUDENTS.forEach(fullName => {
+      const opt = document.createElement("option");
+      opt.value = fullName;
+      datalistEl.appendChild(opt);
+    });
+
+    // Тек кириллица/латын әріптері мен бос орынды қалдыру (смайлик/эмодзи/белгілерді кесу)
+    function sanitizeLettersOnly(str) {
+      return String(str || "")
+        .replace(/[^\p{L}\s-]/gu, "")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function normalizeForMatch(str) {
+      return sanitizeLettersOnly(str)
+        .toLowerCase()
+        .replace(/ё/g, "е")
+        .replace(/і/g, "и")
+        .replace(/ң/g, "н")
+        .replace(/ғ/g, "г")
+        .replace(/ү/g, "у")
+        .replace(/ұ/g, "у")
+        .replace(/қ/g, "к")
+        .replace(/ө/g, "о")
+        .replace(/һ/g, "х");
+    }
+
+    function matchAllowedStudent(rawInput) {
+      // Егер смайлик немесе тыйым салынған символ болса, бірден қабылдамаймыз
+      const cleaned = sanitizeLettersOnly(rawInput);
+      if (!cleaned || cleaned !== rawInput.trim()) {
+        return null;
+      }
+
+      const exact = ALLOWED_STUDENTS.find(s => s === cleaned);
+      if (exact) return exact;
+
+      const normInput = normalizeForMatch(cleaned);
+      const fuzzy = ALLOWED_STUDENTS.find(s => normalizeForMatch(s) === normInput);
+      return fuzzy || null;
+    }
+
+    const nameInputEl = document.getElementById("studentName");
+    nameInputEl.addEventListener("input", () => {
+      // Телефоннан смайлик немесе сан терсе, бірден тазалап тастайды
+      const filtered = nameInputEl.value.replace(/[^\p{L}\s-]/gu, "");
+      if (nameInputEl.value !== filtered) {
+        nameInputEl.value = filtered;
+      }
+    });
+
     let db = null;
     try {
       if (!firebase.apps.length) {
@@ -324,6 +408,7 @@
     let studentData = { name: "", group: "" };
     let tabSwitches = 0;
     let testActive = false;
+    let isSubmitting = false;
 
     const startScreen = document.getElementById("startScreen");
     const quizScreen = document.getElementById("quizScreen");
@@ -335,10 +420,50 @@
       sec.classList.remove("hidden");
     }
 
+    function registerViolation() {
+      if (!testActive || isSubmitting) return;
+      tabSwitches++;
+      document.getElementById("tabSwitchCount").textContent = tabSwitches;
+
+      if (tabSwitches >= MAX_TAB_SWITCHES) {
+        alert(`Қойындыдан ${MAX_TAB_SWITCHES} рет шықтыңыз. Тест автоматты түрде аяқталады.`);
+        submitQuiz(true);
+      } else {
+        alert(`Ескерту! Басқа бетке/қойындыға шығу тіркелді (${tabSwitches}/${MAX_TAB_SWITCHES}).`);
+      }
+    }
+
     document.addEventListener("visibilitychange", () => {
       if (testActive && document.hidden) {
-        tabSwitches++;
-        document.getElementById("tabSwitchCount").textContent = tabSwitches;
+        registerViolation();
+      }
+    });
+
+    window.addEventListener("blur", () => {
+      if (testActive && !document.hidden) {
+        registerViolation();
+      }
+    });
+
+    document.addEventListener("contextmenu", (e) => {
+      if (testActive) e.preventDefault();
+    });
+
+    ["copy", "cut", "paste"].forEach(ev => {
+      document.addEventListener(ev, (e) => {
+        if (testActive) e.preventDefault();
+      });
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (!testActive) return;
+      const key = e.key.toLowerCase();
+      if (
+        key === "f12" ||
+        ((e.ctrlKey || e.metaKey) && ["c", "x", "v", "a", "u", "s", "p"].includes(key)) ||
+        ((e.ctrlKey || e.metaKey) && e.shiftKey && ["i", "j", "c"].includes(key))
+      ) {
+        e.preventDefault();
       }
     });
 
@@ -351,7 +476,7 @@
         div.innerHTML = `<div class="q-title">${q.text}</div>` +
           q.options.map((opt, oIdx) => `
             <label class="option">
-              <input type="radio" name="q_${idx}" value="${oIdx}" required />
+              <input type="radio" name="q_${idx}" value="${oIdx}" />
               <span>${opt}</span>
             </label>
           `).join("");
@@ -360,26 +485,35 @@
     }
 
     document.getElementById("startTestBtn").addEventListener("click", () => {
-      const name = document.getElementById("studentName").value.trim();
-      const group = document.getElementById("studentGroup").value.trim();
+      const rawName = nameInputEl.value;
+      const group = sanitizeLettersOnly(document.getElementById("studentGroup").value) || document.getElementById("studentGroup").value.trim();
       const errEl = document.getElementById("startError");
 
-      if (!name || !group) {
-        errEl.textContent = "Аты-жөніңіз бен тобыңызды міндетті түрде жазыңыз.";
+      const matchedName = matchAllowedStudent(rawName);
+      if (!matchedName) {
+        errEl.textContent = "Қате: тізімде жоқ ат, өтірік жазу немесе смайлик/артық белгі болмауы керек. Тек тізімдегі Фамилия мен Атын жазыңыз.";
         return;
       }
+
+      if (!group) {
+        errEl.textContent = "Топты міндетті түрде жазыңыз.";
+        return;
+      }
+
       errEl.textContent = "";
-      studentData = { name, group };
+      nameInputEl.value = matchedName;
+      studentData = { name: matchedName, group };
       tabSwitches = 0;
+      isSubmitting = false;
       document.getElementById("tabSwitchCount").textContent = "0";
       renderQuestions();
       testActive = true;
       showSection(quizScreen);
     });
 
-    document.getElementById("quizForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      if (!testActive) return;
+    async function submitQuiz(autoSubmitted = false) {
+      if (!testActive || isSubmitting) return;
+      isSubmitting = true;
       testActive = false;
 
       let score = 0;
@@ -395,11 +529,12 @@
         score: score,
         total: QUESTIONS.length,
         tabSwitches: tabSwitches,
+        autoSubmitted: autoSubmitted,
         submittedAt: new Date().toISOString()
       };
 
       document.getElementById("resultStudentInfo").textContent =
-        `${payload.name} (${payload.group})`;
+        `${payload.name} (${payload.group})${autoSubmitted ? " — лимит асып, автоматты жіберілді" : ""}`;
       document.getElementById("scoreText").textContent =
         `${payload.score} / ${payload.total} балл`;
 
@@ -417,10 +552,15 @@
       } catch (err) {
         saveStatus.textContent = "Базаға сақтау кезінде қате шықты: " + err.message;
       }
+    }
+
+    document.getElementById("quizForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      submitQuiz(false);
     });
 
     document.getElementById("restartBtn").addEventListener("click", () => {
-      document.getElementById("studentName").value = "";
+      nameInputEl.value = "";
       document.getElementById("studentGroup").value = "";
       showSection(startScreen);
     });
