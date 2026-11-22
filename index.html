@@ -32,7 +32,7 @@
       user-select: none;
     }
     .container {
-      max-width: 860px;
+      max-width: 900px;
       margin: 0 auto;
       padding: 24px 16px 64px;
     }
@@ -104,14 +104,22 @@
       cursor: pointer;
       border: none;
       border-radius: 10px;
-      padding: 11px 18px;
-      font-size: 15px;
+      padding: 10px 16px;
+      font-size: 14px;
       font-weight: 600;
       transition: 0.15s ease;
     }
     .btn-primary { background: var(--accent); color: #062033; }
     .btn-primary:hover { filter: brightness(1.08); }
     .btn-success { background: var(--accent-2); color: #052e16; }
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.16);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      padding: 6px 10px;
+      font-size: 12px;
+    }
+    .btn-danger:hover { background: rgba(239, 68, 68, 0.28); }
     .btn-ghost {
       background: transparent;
       color: var(--text);
@@ -134,9 +142,9 @@
     }
     .option:hover { border-color: var(--accent); }
     .warn-box {
-      background: rgba(245, 158, 11, 0.12);
-      border: 1px solid rgba(245, 158, 11, 0.4);
-      color: #fde68a;
+      background: rgba(239, 68, 68, 0.14);
+      border: 1px solid rgba(239, 68, 68, 0.45);
+      color: #fecaca;
       padding: 12px 14px;
       border-radius: 12px;
       font-size: 14px;
@@ -176,7 +184,7 @@
     <!-- 1. Кіру бөлімі -->
     <section class="card" id="startScreen">
       <h1>Швецияның инфрақұрылымдық, технологиялық және экологиялық дамуы</h1>
-      <p>Тест 5 сұрақтан тұрады. Тек тізімдегі нақты студенттер ғана тапсыра алады (Фамилия + Аты). Смайлик пен бөгде таңбалар қабылданбайды. Вкладкадан 3 рет шықсаңыз — тест автоматты түрде аяқталады.</p>
+      <p>Тест 5 сұрақтан тұрады. Тек тізімдегі нақты студенттер ғана тапсыра алады (Фамилия + Аты). Смайлик пен бөгде таңбалар өтпейді. Вкладкадан <strong>1 рет</strong> шықсаңыз — тест бірден жабылып, нәтиже жіберіледі. Бір атпен екінші рет кіруге болмайды.</p>
       <div class="grid-2" style="margin: 16px 0;">
         <div>
           <label for="studentName">Фамилия және Аты *</label>
@@ -196,7 +204,7 @@
     <!-- 2. Тест бөлімі -->
     <section class="card no-copy hidden" id="quizScreen">
       <div class="warn-box" id="antiCheatAlert">
-        Қойындыдан шығу саны: <strong id="tabSwitchCount">0</strong> / 3 • Көшіру бұғатталған
+        Ескерту: вкладкадан/экраннан <strong>1 рет</strong> шықсаңыз, тест бірден автоматты түрде жабылады! • Көшіру бұғатталған
       </div>
       <form id="quizForm">
         <div id="questionsContainer"></div>
@@ -241,7 +249,7 @@
             <div class="stat-val" id="statMax">0</div>
           </div>
           <div class="stat-box">
-            <div class="stat-label">Вкладка ауысу саны</div>
+            <div class="stat-label">Шығумен аяқталғаны</div>
             <div class="stat-val" id="statSwitches" style="color: var(--warn);">0</div>
           </div>
         </div>
@@ -254,8 +262,9 @@
                 <th>Студент (Фамилия Аты)</th>
                 <th>Топ</th>
                 <th>Нәтиже (балл)</th>
-                <th>Вкладкадан шығу</th>
+                <th>Күйі</th>
                 <th>Тапсырған уақыты</th>
+                <th>Қайта рұқсат</th>
               </tr>
             </thead>
             <tbody id="resultsTableBody"></tbody>
@@ -281,9 +290,7 @@
     };
 
     const TEACHER_PASSWORD = "admin123";
-    const MAX_TAB_SWITCHES = 3;
 
-    // Рұқсат етілген тізім (Жұмабай Айбек, Дайрабай Қымбат, Байманова Аружан алынып тасталды)
     const ALLOWED_STUDENTS = [
       "Абилдаш Улту",
       "Азаматқызы Луиза",
@@ -341,7 +348,6 @@
       }
     ];
 
-    // Datalist толтыру
     const datalistEl = document.getElementById("allowedStudentsList");
     ALLOWED_STUDENTS.forEach(fullName => {
       const opt = document.createElement("option");
@@ -349,7 +355,6 @@
       datalistEl.appendChild(opt);
     });
 
-    // Тек кириллица/латын әріптері мен бос орынды қалдыру (смайлик/эмодзи/белгілерді кесу)
     function sanitizeLettersOnly(str) {
       return String(str || "")
         .replace(/[^\p{L}\s-]/gu, "")
@@ -372,23 +377,18 @@
     }
 
     function matchAllowedStudent(rawInput) {
-      // Егер смайлик немесе тыйым салынған символ болса, бірден қабылдамаймыз
       const cleaned = sanitizeLettersOnly(rawInput);
       if (!cleaned || cleaned !== rawInput.trim()) {
         return null;
       }
-
       const exact = ALLOWED_STUDENTS.find(s => s === cleaned);
       if (exact) return exact;
-
       const normInput = normalizeForMatch(cleaned);
-      const fuzzy = ALLOWED_STUDENTS.find(s => normalizeForMatch(s) === normInput);
-      return fuzzy || null;
+      return ALLOWED_STUDENTS.find(s => normalizeForMatch(s) === normInput) || null;
     }
 
     const nameInputEl = document.getElementById("studentName");
     nameInputEl.addEventListener("input", () => {
-      // Телефоннан смайлик немесе сан терсе, бірден тазалап тастайды
       const filtered = nameInputEl.value.replace(/[^\p{L}\s-]/gu, "");
       if (nameInputEl.value !== filtered) {
         nameInputEl.value = filtered;
@@ -420,31 +420,27 @@
       sec.classList.remove("hidden");
     }
 
-    function registerViolation() {
+    // Бір рет шықса — бірден жабылып, нәтиже жіберіледі
+    function handleSingleExit() {
       if (!testActive || isSubmitting) return;
-      tabSwitches++;
-      document.getElementById("tabSwitchCount").textContent = tabSwitches;
-
-      if (tabSwitches >= MAX_TAB_SWITCHES) {
-        alert(`Қойындыдан ${MAX_TAB_SWITCHES} рет шықтыңыз. Тест автоматты түрде аяқталады.`);
-        submitQuiz(true);
-      } else {
-        alert(`Ескерту! Басқа бетке/қойындыға шығу тіркелді (${tabSwitches}/${MAX_TAB_SWITCHES}).`);
-      }
+      tabSwitches = 1;
+      alert("Вкладкадан/экраннан шықтыңыз! Тест бірден жабылып, нәтиже базаға жіберіледі.");
+      submitQuiz(true);
     }
 
     document.addEventListener("visibilitychange", () => {
       if (testActive && document.hidden) {
-        registerViolation();
+        handleSingleExit();
       }
     });
 
     window.addEventListener("blur", () => {
       if (testActive && !document.hidden) {
-        registerViolation();
+        handleSingleExit();
       }
     });
 
+    // Көшіру және тінтуірдің оң жақ батырмасын бұғаттау
     document.addEventListener("contextmenu", (e) => {
       if (testActive) e.preventDefault();
     });
@@ -484,7 +480,16 @@
       });
     }
 
-    document.getElementById("startTestBtn").addEventListener("click", () => {
+    async function hasAlreadySubmitted(canonicalName) {
+      if (!db) return false;
+      const snap = await db.ref("sweden_quiz_results").once("value");
+      const data = snap.val();
+      if (!data) return false;
+      const targetNorm = normalizeForMatch(canonicalName);
+      return Object.values(data).some(item => normalizeForMatch(item.name) === targetNorm);
+    }
+
+    document.getElementById("startTestBtn").addEventListener("click", async () => {
       const rawName = nameInputEl.value;
       const group = sanitizeLettersOnly(document.getElementById("studentGroup").value) || document.getElementById("studentGroup").value.trim();
       const errEl = document.getElementById("startError");
@@ -500,12 +505,18 @@
         return;
       }
 
+      errEl.textContent = "Тексерілуде...";
+      const alreadyUsed = await hasAlreadySubmitted(matchedName);
+      if (alreadyUsed) {
+        errEl.textContent = `«${matchedName}» атымен тест бұрын тапсырылған. Екінші рет тапсыруға болмайды (қайта ашу үшін мұғалім панелінен өшіру керек).`;
+        return;
+      }
+
       errEl.textContent = "";
       nameInputEl.value = matchedName;
       studentData = { name: matchedName, group };
       tabSwitches = 0;
       isSubmitting = false;
-      document.getElementById("tabSwitchCount").textContent = "0";
       renderQuestions();
       testActive = true;
       showSection(quizScreen);
@@ -534,7 +545,7 @@
       };
 
       document.getElementById("resultStudentInfo").textContent =
-        `${payload.name} (${payload.group})${autoSubmitted ? " — лимит асып, автоматты жіберілді" : ""}`;
+        `${payload.name} (${payload.group})${autoSubmitted ? " — вкладкадан шыққандықтан автоматты жабылды" : ""}`;
       document.getElementById("scoreText").textContent =
         `${payload.score} / ${payload.total} балл`;
 
@@ -586,10 +597,21 @@
       listenResults();
     });
 
+    async function allowRetake(recordKey, studentName) {
+      if (!db || !recordKey) return;
+      const ok = confirm(`«${studentName}» нәтижесін базадан өшіріп, қайта тапсыруға рұқсат бересіз бе?`);
+      if (!ok) return;
+      try {
+        await db.ref("sweden_quiz_results/" + recordKey).remove();
+      } catch (err) {
+        alert("Өшіру кезінде қате: " + err.message);
+      }
+    }
+
     function listenResults() {
       const tbody = document.getElementById("resultsTableBody");
       if (!db) {
-        tbody.innerHTML = `<tr><td colspan="6">База қосылмаған.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7">База қосылмаған.</td></tr>`;
         return;
       }
 
@@ -601,34 +623,47 @@
           document.getElementById("statAvg").textContent = "0";
           document.getElementById("statMax").textContent = "0";
           document.getElementById("statSwitches").textContent = "0";
-          tbody.innerHTML = `<tr><td colspan="6">Әзірге нәтиже жоқ.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="7">Әзірге нәтиже жоқ.</td></tr>`;
           return;
         }
 
-        const rows = Object.values(data).sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
-        const totalQuestions = rows[0]?.total ?? QUESTIONS.length;
-        const scores = rows.map(r => Number(r.score) || 0);
-        const avgScore = (scores.reduce((acc, v) => acc + v, 0) / rows.length).toFixed(1);
-        const maxScore = Math.max(...scores);
-        const totalSwitches = rows.reduce((acc, r) => acc + (Number(r.tabSwitches) || 0), 0);
+        const entries = Object.entries(data)
+          .map(([key, val]) => ({ key, ...val }))
+          .sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
 
-        document.getElementById("statCount").textContent = String(rows.length);
+        const totalQuestions = entries[0]?.total ?? QUESTIONS.length;
+        const scores = entries.map(r => Number(r.score) || 0);
+        const avgScore = (scores.reduce((acc, v) => acc + v, 0) / entries.length).toFixed(1);
+        const maxScore = Math.max(...scores);
+        const exitedCount = entries.filter(r => r.autoSubmitted || (Number(r.tabSwitches) || 0) > 0).length;
+
+        document.getElementById("statCount").textContent = String(entries.length);
         document.getElementById("statAvg").textContent = `${avgScore} / ${totalQuestions}`;
         document.getElementById("statMax").textContent = `${maxScore} / ${totalQuestions}`;
-        document.getElementById("statSwitches").textContent = String(totalSwitches);
+        document.getElementById("statSwitches").textContent = String(exitedCount);
 
-        rows.forEach((item, i) => {
+        entries.forEach((item, i) => {
           const tr = document.createElement("tr");
           const dt = item.submittedAt ? new Date(item.submittedAt).toLocaleString("kk-KZ") : "-";
-          const sw = Number(item.tabSwitches) || 0;
+          const exited = item.autoSubmitted || (Number(item.tabSwitches) || 0) > 0;
+          const statusText = exited ? `<span class="warn-num">Шығып кетті</span>` : "Қалыпты";
+
           tr.innerHTML = `
             <td>${i + 1}</td>
             <td>${escapeHtml(item.name)}</td>
             <td>${escapeHtml(item.group)}</td>
             <td><strong>${item.score ?? 0} / ${item.total ?? totalQuestions}</strong></td>
-            <td class="${sw > 0 ? "warn-num" : ""}">${sw}</td>
+            <td>${statusText}</td>
             <td>${dt}</td>
+            <td><button type="button" class="btn-danger" data-key="${escapeHtml(item.key)}" data-name="${escapeHtml(item.name)}">Қайта ашу</button></td>
           `;
+
+          tr.querySelector("button").addEventListener("click", (ev) => {
+            const k = ev.currentTarget.getAttribute("data-key");
+            const n = ev.currentTarget.getAttribute("data-name");
+            allowRetake(k, n);
+          });
+
           tbody.appendChild(tr);
         });
       });
